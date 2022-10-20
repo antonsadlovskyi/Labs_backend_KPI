@@ -1,11 +1,14 @@
 from Lab_1_Rest_API import app
 from flask import jsonify, request
+import datetime
 
 
 
 
 id_of_user = 1
 id_of_category = 1
+id_of_records = 1
+
 
 
 USERS = [
@@ -20,6 +23,16 @@ CATEGORIES = [
         "name": "Food",
     }
 ]
+RECORDS = [
+    {
+        "id": 1,
+        "id_of_user": 1,
+        "id_of_category": 1,
+        "time": datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S"),
+        "amounts": 100,
+    }
+]
+
 
 
 
@@ -71,3 +84,37 @@ def create_category():
     })
     return jsonify(request_data)
 
+
+
+
+
+
+
+
+
+
+
+# GET /categories
+# POST /category
+@app.route("/records")
+def get_records():
+    return jsonify({"records": RECORDS})
+
+
+@app.route("/record", methods=['POST'])
+def create_record():
+    global id_of_records
+    id_of_records += 1
+
+    request_data = request.get_json()
+    #
+    # time = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%d")
+
+    RECORDS.append({
+        "id": id_of_records,
+        "id_of_user": 1,
+        "id_of_category": 1,
+        "time": datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S"),
+        "amounts": 100,
+    })
+    return jsonify(request_data)
