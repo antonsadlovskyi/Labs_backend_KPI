@@ -1,7 +1,7 @@
 version: '3'
 
 services:
- lab_1_rest_api:
+ backpythonkpi:
    restart: always
    build:
      context: .

@@ -1,4 +1,4 @@
-from lab_1_rest_api import app
+from backpythonkpi import app
 from flask import jsonify, request
 import datetime
 
