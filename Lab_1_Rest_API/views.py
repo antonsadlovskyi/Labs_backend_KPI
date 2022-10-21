@@ -1,4 +1,4 @@
-from Lab_1_Rest_API import app
+from lab_1_rest_api import app
 from flask import jsonify, request
 import datetime
 
@@ -94,8 +94,8 @@ def create_category():
 
 
 
-# GET /categories
-# POST /category
+# GET /records
+# POST /record
 @app.route("/records")
 def get_records():
     return jsonify({"records": RECORDS})

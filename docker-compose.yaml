@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+ lab_1_rest_api:
+   restart: always
+   build:
+     context: .
+     dockerfile: Dockerfile
+   environment:
+     PORT: 5005
+   ports:
+     - "5005:5005"
