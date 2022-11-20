@@ -1,38 +1,12 @@
+import uuid
+
 from backpythonkpi import app
 from flask import jsonify, request
+from flask_smorest import abort
 import datetime
 
 
-
-
-id_of_user = 1
-id_of_category = 1
-id_of_records = 1
-
-
-
-USERS = [
-    {
-        "id": 1,
-        "name": "Anton",
-    }
-]
-CATEGORIES = [
-    {
-        "id": 1,
-        "name": "Food",
-    }
-]
-RECORDS = [
-    {
-        "id": 1,
-        "id_of_user": 1,
-        "id_of_category": 1,
-        "time": datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S"),
-        "amounts": 100,
-    }
-]
-
+from backpythonkpi.db import users, records, categories
 
 
 
@@ -42,21 +16,29 @@ RECORDS = [
 # POST /user
 @app.route("/users")
 def get_users():
-    return jsonify({"users": USERS})
+    return jsonify(list(users.values()))
 
 
 @app.route("/user", methods=['POST'])
 def create_user():
-    global id_of_user
 
     request_data = request.get_json()
-    id_of_user += 1
 
-    USERS.append({
+    if "name" not in request_data:
+        abort(400, message="Need name for create user")
+
+    if request_data["name"] in [u["name"] for u in users.values()]:
+        abort(400, message="Name must be unique")
+
+    id_of_user = uuid.uuid4().hex
+
+    user = {
         "id": id_of_user,
-        "name": request_data['name']
-    })
-    return jsonify(request_data)
+        **request_data,
+    }
+
+    users[id_of_user] = user
+    return jsonify(user)
 
 
 
@@ -68,21 +50,22 @@ def create_user():
 # POST /category
 @app.route("/categories")
 def get_categories():
-    return jsonify({"categories": CATEGORIES})
+    return jsonify(list(categories.values()))
 
 
 @app.route("/category", methods=['POST'])
 def create_category():
-    global id_of_category
-    id_of_category += 1
+    # global id_of_category
 
     request_data = request.get_json()
+    id_of_category = uuid.uuid4().hex
 
-    CATEGORIES.append({
+    category = {
         "id": id_of_category,
-        "name": request_data['name']
-    })
-    return jsonify(request_data)
+        **request_data
+    }
+    categories[id_of_category] = category
+    return jsonify(category)
 
 
 
@@ -98,23 +81,35 @@ def create_category():
 # POST /record
 @app.route("/records")
 def get_records():
-    return jsonify({"records": RECORDS})
+    return jsonify(list(records.values()))
 
 
 @app.route("/record", methods=['POST'])
 def create_record():
-    global id_of_records
-    id_of_records += 1
 
     request_data = request.get_json()
-    #
-    # time = datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%d")
+    id_of_records = uuid.uuid4().hex
 
-    RECORDS.append({
+    if(
+        "id_of_user" not in request_data
+        and "category_id" not in request_data
+        and "amounts" not in request_data
+    ):
+        abort(400, message="Bad request. user_id is required.")
+
+
+    if request_data["id_of_user"] not in users:
+        abort(404, message="User not found")
+
+    if request_data["id_of_category"] not in categories:
+        abort(404, message="Category not found")
+
+
+    record = {
         "id": id_of_records,
-        "id_of_user": 1,
-        "id_of_category": 1,
+        **request_data,
         "time": datetime.datetime.now().strftime("%d-%m-%Y-%H:%M:%S"),
-        "amounts": 100,
-    })
-    return jsonify(request_data)
+    }
+    records[id_of_records] = record
+
+    return jsonify(record)

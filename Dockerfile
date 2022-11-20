@@ -1,6 +1,7 @@
 FROM python:3.10.3
 
 ENV FLASK_APP=backpythonkpi
+ENV FLASK_DEBUG=$FLASK_DEBUG
 
 COPY requirements.txt /opt
 

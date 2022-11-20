@@ -1,0 +1,10 @@
+#!/bin/sh
+'''exec' "/Users/antonsadlovskij/Desktop/KPI 📈/3 курс/1 семестр/Технології розробки серверно програмного забезпечення (Back-end)/Labs_backend_KPI/env/bin/python" "$0" "$@"
+' '''
+# -*- coding: utf-8 -*-
+import re
+import sys
+from PySimpleGUI.PySimpleGUI import main_sdk_help
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(main_sdk_help())

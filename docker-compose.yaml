@@ -6,7 +6,9 @@ services:
    build:
      context: .
      dockerfile: Dockerfile
+   volumes: ["./backpythonkpi:/opt/backpythonkpi"]
    environment:
      PORT: 5005
+     FLASK_DEBUG: "true"
    ports:
      - "5005:5005"
