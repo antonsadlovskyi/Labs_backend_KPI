@@ -2,76 +2,29 @@ import uuid
 
 from backpythonkpi import app
 from flask import jsonify, request
-from flask_smorest import abort
+from flask_smorest import abort, Api
 import datetime
 
 
 from backpythonkpi.db import users, records, categories
 
+from backpythonkpi.recources.user import blp as UserBlueprint
+from backpythonkpi.recources.category import blp as CategoryBlueprint
 
 
+app.config["PROPAGATE_EXCEPTIONS"] = True
+app.config["API_TITLE"] = "Finance REST API"
+app.config["API_VERSION"] = 'v1'
+app.config["OPENAPI_VERSION"] = "3.0.3"
+app.config["OPENAPI_URL_PREFIX"] = "/"
+app.config["OPENAPI_SWAGGER_UI_PATH"] = "swagger-ui"
+app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npn/swagger-ui-dist/"
 
 
-# GET /users
-# POST /user
-@app.route("/users")
-def get_users():
-    return jsonify(list(users.values()))
+api = Api(app)
 
-
-@app.route("/user", methods=['POST'])
-def create_user():
-
-    request_data = request.get_json()
-
-    if "name" not in request_data:
-        abort(400, message="Need name for create user")
-
-    if request_data["name"] in [u["name"] for u in users.values()]:
-        abort(400, message="Name must be unique")
-
-    id_of_user = uuid.uuid4().hex
-
-    user = {
-        "id": id_of_user,
-        **request_data,
-    }
-
-    users[id_of_user] = user
-    return jsonify(user)
-
-
-
-
-
-
-
-# GET /categories
-# POST /category
-@app.route("/categories")
-def get_categories():
-    return jsonify(list(categories.values()))
-
-
-@app.route("/category", methods=['POST'])
-def create_category():
-    # global id_of_category
-
-    request_data = request.get_json()
-    id_of_category = uuid.uuid4().hex
-
-    category = {
-        "id": id_of_category,
-        **request_data
-    }
-    categories[id_of_category] = category
-    return jsonify(category)
-
-
-
-
-
-
+api.register_blueprint(UserBlueprint)
+api.register_blueprint(CategoryBlueprint)
 
 
 
