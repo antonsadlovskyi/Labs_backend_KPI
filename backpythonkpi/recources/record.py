@@ -9,6 +9,8 @@ from backpythonkpi.db import records, categories, users
 
 import datetime
 
+from backpythonkpi.schemas import RecordSchema
+
 blp = Blueprint("record", __name__, description="Operations on category")
 
 
@@ -38,22 +40,16 @@ class RecordList(MethodView):
             )
         return get_records_by_filter(lambda x: x["id_of_user"] == id_of_user)
 
-    def post(self):
-        request_data = request.get_json()
-        id_of_records = uuid.uuid4().hex
-
-        if (
-                "id_of_user" not in request_data
-                or "id_of_category" not in request_data
-                or "amounts" not in request_data
-        ):
-            abort(400, message="Bad request. id_of_user, id_of_category, amounts are required.")
-
+    @blp.arguments(RecordSchema)
+    def post(self, request_data):
+        
         if request_data["id_of_user"] not in users:
             abort(404, message="User not found")
 
         if request_data["id_of_category"] not in categories:
             abort(404, message="Category not found")
+
+        id_of_records = uuid.uuid4().hex
 
         record = {
             "id": id_of_records,

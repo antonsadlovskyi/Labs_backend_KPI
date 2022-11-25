@@ -5,6 +5,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint
 
 from backpythonkpi.db import categories
+from backpythonkpi.schemas import CategorySchema
 
 blp = Blueprint("category", __name__, description="Operations on category")
 
@@ -19,8 +20,9 @@ class GategoryList(MethodView):
     def get(self):
         return list(categories.values())
 
-    def post(self):
-        request_data = request.get_json()
+
+    @blp.arguments(CategorySchema)
+    def post(self, request_data):
         id_of_category = uuid.uuid4().hex
 
         category = {

@@ -5,6 +5,7 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 
 from backpythonkpi.db import users
+from backpythonkpi.schemas import UserSchema
 
 blp = Blueprint("user", __name__, description="Operations on user")
 
@@ -31,8 +32,9 @@ class UserList(MethodView):
      def get(self):
          return list(users.values())
 
-     def post(self):
-         request_data = request.get_json()
+
+     @blp.arguments(UserSchema)
+     def post(self, request_data):
 
          if "name" not in request_data:
              abort(400, message="Need name for create user")
