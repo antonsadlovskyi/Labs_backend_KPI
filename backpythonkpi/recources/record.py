@@ -9,13 +9,14 @@ from backpythonkpi.db import records, categories, users
 
 import datetime
 
-from backpythonkpi.schemas import RecordSchema
+from backpythonkpi.schemas import RecordSchema, RecordQuerySchema
 
 blp = Blueprint("record", __name__, description="Operations on category")
 
 
 @blp.route("/record/<string:record_id>")
 class Record(MethodView):
+    @blp.response(200, RecordSchema)
     def get(self, id_of_records):
         try:
             return records[id_of_records ]
@@ -25,13 +26,15 @@ class Record(MethodView):
 
 @blp.route("/record")
 class RecordList(MethodView):
-    def get(self):
-        args = request.args.to_dict()
-        id_of_user = args.get("user_id")
-        if not id_of_user:
-            return {"error": "Need at least id_of_user to get records"}, 400
+    @blp.arguments(RecordQuerySchema, location="query", as_kwargs=True)
+    @blp.response(200, RecordSchema(many=True))
+    def get(self, **kwargs):
+        id_of_user = kwargs.get("id_of_user")
 
-        id_of_category = args.get("id_of_category")
+        if not id_of_user:
+            return abort(400, message="Need at least id_of_user to get records")
+
+        id_of_category = kwargs.get("id_of_category")
         if id_of_category:
             return get_records_by_filter(
                 lambda x: (
@@ -41,8 +44,9 @@ class RecordList(MethodView):
         return get_records_by_filter(lambda x: x["id_of_user"] == id_of_user)
 
     @blp.arguments(RecordSchema)
+    @blp.response(200, RecordSchema)
     def post(self, request_data):
-        
+
         if request_data["id_of_user"] not in users:
             abort(404, message="User not found")
 
