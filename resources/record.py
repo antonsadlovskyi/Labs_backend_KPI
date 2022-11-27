@@ -1,7 +1,6 @@
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 
-from bl import get_records_by_filter
 from db import db
 from models import RecordModel
 from schemas import RecordSchema, RecordQuerySchema
