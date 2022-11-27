@@ -1,9 +1,7 @@
-import uuid
-
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 
-from db import users, db
+from db import db
 from models.user import UserModel
 from schemas import UserSchema
 from sqlalchemy.exc import IntegrityError

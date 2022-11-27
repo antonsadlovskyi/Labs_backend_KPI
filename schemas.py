@@ -8,6 +8,7 @@ class UserSchema(Schema):
 class CategorySchema(Schema):
     id = fields.Int(dump_only=True)
     name = fields.Str(required=True)
+    owner_id = fields.Int(required=False)
 
 class RecordQuerySchema(Schema):
     id_of_user = fields.Int(required=True)
