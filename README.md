@@ -20,7 +20,7 @@
 3. docker-compose -up
 
 
-Deployment on Heroku you can see here: https://backpythonkpi.herokuapp.com/users
+Deployment on Heroku you can see here: https://backpythonkpi.herokuapp.com/user
 
 
 
