@@ -3,8 +3,10 @@ import uuid
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 
-from db import users
+from db import users, db
+from models.user import UserModel
 from schemas import UserSchema
+from sqlalchemy.exc import IntegrityError
 
 blp = Blueprint("user", __name__, description="Operations on user")
 
@@ -12,20 +14,12 @@ blp = Blueprint("user", __name__, description="Operations on user")
 class User(MethodView):
     @blp.response(200, UserSchema)
     def get(self, id_of_user):
-        try:
-            return users[id_of_user]
-        except KeyError:
-            abort(404, message="User not found")
+        user = UserModel.query.get_or_404(id_of_user)
+        return user
 
     @blp.response(200, UserSchema)
     def delete(self, id_of_user):
-        try:
-            deleted_user = users[id_of_user]
-            del users[id_of_user]
-            return deleted_user
-
-        except KeyError:
-            abort(404, message="User not found")
+        raise NotImplementedError("Not implemented for now")
 
 
 @blp.route("/user")
@@ -33,27 +27,21 @@ class UserList(MethodView):
 
      @blp.response(200, UserSchema(many=True))
      def get(self):
-         return list(users.values())
+         return UserModel.query.all()
 
 
      @blp.arguments(UserSchema)
      @blp.response(200, UserSchema)
      def post(self, request_data):
-
-         if "name" not in request_data:
-             abort(400, message="Need name for create user")
-
-         if request_data["name"] in [u["name"] for u in users.values()]:
-             abort(400, message="Name must be unique")
-
-         id_of_user = uuid.uuid4().hex
-
-         user = {
-             "id": id_of_user,
-             **request_data,
-         }
-
-         users[id_of_user] = user
-         return user
+        user = UserModel(**request_data)
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except IntegrityError:
+            abort(
+                400,
+                message="User with this name already exists",
+            )
+        return user
 
 
