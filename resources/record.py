@@ -38,7 +38,7 @@ class RecordList(MethodView):
     @blp.response(200, RecordSchema)
     def post(self, request_data):
         record = RecordModel(**request_data)
-        
+
         id_of_category = request_data.get("category_id")
 
         category_owner_id = CategoryModel.query.with_entities(CategoryModel.owner_id).filter_by(id=id_of_category).scalar()

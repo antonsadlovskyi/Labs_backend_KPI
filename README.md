@@ -21,3 +21,11 @@
 
 
 Deployment on Heroku you can see here: https://backpythonkpi.herokuapp.com/users
+
+
+
+### *Визначення варіанту для 2 лабораторної роботи:*
+
+Група ІО-05: 5 % 3 = 2
+
+#### 2 варіант: Користувацькі категорії витрат
